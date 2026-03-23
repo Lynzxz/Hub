@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Lynzxz Hub | Security Suite</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Sementara kita taruh style dasar di sini dulu */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0a0f1a 0%, #05080f 100%);
+            font-family: 'Segoe UI', 'Courier New', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        /* Particle effect background */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.4;
+        }
+        .login-container {
+            position: relative;
+            z-index: 2;
+            background: rgba(10, 20, 30, 0.7);
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
+            padding: 40px;
+            width: 90%;
+            max-width: 450px;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            box-shadow: 0 0 40px rgba(0, 255, 255, 0.1);
+            animation: fadeInUp 0.6s ease-out;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo h1 {
+            font-size: 28px;
+            background: linear-gradient(135deg, #00ffff, #ff00cc);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: 2px;
+        }
+        .logo p {
+            color: #66ccff;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+        .device-info {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 25px;
+            font-size: 12px;
+            font-family: monospace;
+            color: #0f0;
+            border-left: 3px solid #0f0;
+            white-space: nowrap;
+            overflow-x: auto;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        .input-group label {
+            display: block;
+            color: #ccddff;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid #336699;
+            border-radius: 12px;
+            color: #0ff;
+            font-size: 16px;
+            font-family: monospace;
+            transition: all 0.3s;
+        }
+        .input-group input:focus {
+            outline: none;
+            border-color: #0ff;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(90deg, #0066cc, #00cc99);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+        .error-msg {
+            color: #ff6666;
+            font-size: 12px;
+            margin-top: 12px;
+            text-align: center;
+            display: none;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 11px;
+            color: #6688aa;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .running-text {
+            animation: blink 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="particleCanvas" class="particles"></canvas>
+    
+    <div class="login-container">
+        <div class="logo">
+            <h1>LYNXZX HUB</h1>
+            <p>Advanced Security Suite</p>
+        </div>
+        
+        <div class="device-info" id="deviceInfo">
+            <span class="running-text">⟳ Memuat informasi perangkat...</span>
+        </div>
+        
+        <div class="input-group">
+            <label>🔐 MASTER KEY</label>
+            <input type="password" id="passwordInput" placeholder="••••••" maxlength="20">
+        </div>
+        
+        <button id="loginBtn">AUTHENTICATE →</button>
+        
+        <div class="error-msg" id="errorMsg">
+            ⚠️ Kunci akses tidak valid. Ulangi.
+        </div>
+        
+        <div class="footer">
+            © 2025 @LynzxzCreator | Protected by Quantum Handshake
+        </div>
+    </div>
+
+    <script>
+        // === PARTICLE BACKGROUND ===
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        
+        function createParticles() {
+            const particleCount = 80;
+            for(let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    radius: Math.random() * 2 + 1,
+                    speedX: (Math.random() - 0.5) * 0.5,
+                    speedY: (Math.random() - 0.5) * 0.3,
+                    color: `rgba(0, ${Math.floor(150 + Math.random() * 105)}, 255, ${Math.random() * 0.5})`
+                });
+            }
+        }
+        
+        function drawParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = p.color;
+                ctx.fill();
+                p.x += p.speedX;
+                p.y += p.speedY;
+                if(p.x < 0) p.x = canvas.width;
+                if(p.x > canvas.width) p.x = 0;
+                if(p.y < 0) p.y = canvas.height;
+                if(p.y > canvas.height) p.y = 0;
+            });
+            requestAnimationFrame(drawParticles);
+        }
+        
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            particles = [];
+            createParticles();
+        });
+        
+        resizeCanvas();
+        createParticles();
+        drawParticles();
+        
+        // === DEVICE INFO & IP (RUNNING TEXT) ===
+        async function getDeviceInfo() {
+            const deviceDiv = document.getElementById('deviceInfo');
+            deviceDiv.innerHTML = '<span class="running-text">⟳ Mengambil data jaringan...</span>';
+            
+            // Ambil IP publik dan info perangkat
+            let ipData = { ip: '127.0.0.1', city: 'Local', region: 'Local' };
+            try {
+                const res = await fetch('https://ipapi.co/json/');
+                const data = await res.json();
+                ipData = {
+                    ip: data.ip || 'unknown',
+                    city: data.city || 'Unknown',
+                    region: data.region || '',
+                    country: data.country_name || ''
+                };
+            } catch(e) {
+                console.warn('IP API failed, using local');
+            }
+            
+            const userAgent = navigator.userAgent;
+            let device = 'Unknown Device';
+            let os = 'Unknown OS';
+            let browser = 'Unknown Browser';
+            
+            if (/Windows NT 10.0/.test(userAgent)) os = 'Windows 11/10';
+            else if (/Windows NT 6.1/.test(userAgent)) os = 'Windows 7';
+            else if (/Mac OS X/.test(userAgent)) os = 'macOS';
+            else if (/Android/.test(userAgent)) os = 'Android';
+            else if (/iPhone|iPad/.test(userAgent)) os = 'iOS';
+            
+            if (/Chrome/.test(userAgent) && !/Edg/.test(userAgent)) browser = 'Chrome';
+            else if (/Firefox/.test(userAgent)) browser = 'Firefox';
+            else if (/Edg/.test(userAgent)) browser = 'Edge';
+            else if (/Safari/.test(userAgent)) browser = 'Safari';
+            
+            device = `${os} / ${browser}`;
+            
+            const locationText = ipData.city && ipData.city !== 'Unknown' 
+                ? `${ipData.city}, ${ipData.country}` 
+                : 'Unknown Location';
+            
+            const infoText = `🌐 IP PUBLIK: ${ipData.ip}  |  📍 ${locationText}  |  💻 ${device}  |  🔐 SESSION: ${new Date().toLocaleTimeString()}`;
+            
+            deviceDiv.innerHTML = `<span class="running-text" style="display:inline-block; white-space:nowrap;">${infoText}</span>`;
+            
+            // Scrolling effect (marquee-like)
+            const marquee = deviceDiv.querySelector('.running-text');
+            if(marquee) {
+                let pos = 0;
+                setInterval(() => {
+                    if(marquee.offsetWidth > deviceDiv.offsetWidth) {
+                        pos--;
+                        if(pos < -marquee.offsetWidth) pos = deviceDiv.offsetWidth;
+                        marquee.style.transform = `translateX(${pos}px)`;
+                    }
+                }, 30);
+            }
+        }
+        
+        getDeviceInfo();
+        setInterval(getDeviceInfo, 30000); // update tiap 30 detik
+        
+        // === LOGIN HANDLER ===
+        const CORRECT_PASSWORD = "050411";
+        const loginBtn = document.getElementById('loginBtn');
+        const passwordInput = document.getElementById('passwordInput');
+        const errorMsg = document.getElementById('errorMsg');
+        
+        function attemptLogin() {
+            const entered = passwordInput.value;
+            if(entered === CORRECT_PASSWORD) {
+                // Simpan status login di sessionStorage
+                sessionStorage.setItem('lynzxz_auth', 'true');
+                // Redirect ke dashboard
+                window.location.href = 'dashboard.html';
+            } else {
+                errorMsg.style.display = 'block';
+                passwordInput.value = '';
+                passwordInput.style.borderColor = '#ff3366';
+                setTimeout(() => {
+                    passwordInput.style.borderColor = '#336699';
+                }, 500);
+            }
+        }
+        
+        loginBtn.addEventListener('click', attemptLogin);
+        passwordInput.addEventListener('keypress', (e) => {
+            if(e.key === 'Enter') attemptLogin();
+        });
+        
+        // Jika sudah login sebelumnya, langsung redirect
+        if(sessionStorage.getItem('lynzxz_auth') === 'true') {
+            window.location.href = 'dashboard.html';
+        }
+    </script>
+</body>
+</html>

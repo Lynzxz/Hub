@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lynzxz Hub | Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+<div class="dashboard">
+    <!-- SIDEBAR MENU -->
+    <div class="sidebar">
+        <div class="logo-sidebar">
+            <h2>LYNXZX</h2>
+            <p style="font-size:10px; color:#66ccff;">v2.0 | by @LynzxzCreator</p>
+        </div>
+        <div class="menu-list" id="menuList">
+            <div class="menu-item active" data-module="ddos">
+                <i class="fas fa-bolt"></i> <span>DDoS Attack</span>
+            </div>
+            <div class="menu-item" data-module="deface">
+                <i class="fas fa-paint-roller"></i> <span>Deface Generator</span>
+            </div>
+            <div class="menu-item" data-module="osint">
+                <i class="fas fa-search-location"></i> <span>OSINT Intelligence</span>
+            </div>
+            <div class="menu-item" data-module="wp">
+                <i class="fab fa-wordpress"></i> <span>WordPress Checker</span>
+            </div>
+            <div class="menu-item" data-module="sql">
+                <i class="fas fa-database"></i> <span>SQL Inject Scanner</span>
+            </div>
+            <div class="menu-item" data-module="admin">
+                <i class="fas fa-user-secret"></i> <span>Admin Finder</span>
+            </div>
+            <div class="menu-item" data-module="brute">
+                <i class="fas fa-key"></i> <span>Brute Force</span>
+            </div>
+            <div class="menu-item" data-module="advanced">
+                <i class="fas fa-skull"></i> <span>Advanced Tools</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <div class="top-bar">
+            <h1 id="moduleTitle">DDoS Attack Suite</h1>
+            <div class="session-info">
+                <i class="fas fa-user-astronaut"></i> @LynzxzCreator | <span id="liveTime"></span>
+            </div>
+        </div>
+        
+        <!-- Tempat modul dinamis -->
+        <div id="moduleContainer" class="module-container">
+            <!-- konten akan diisi JS -->
+        </div>
+        
+        <!-- GLOBAL LOG PANEL -->
+        <div class="log-panel">
+            <div class="log-header">
+                <span><i class="fas fa-terminal"></i> ACTIVITY LOG [GLOBAL]</span>
+                <button class="clear-log" onclick="clearAllLogs()"><i class="fas fa-trash"></i> Clear All</button>
+            </div>
+            <div id="globalLogList" class="log-list">
+                <!-- logs akan diisi JS -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="js/utils.js"></script>
+<script src="js/modules/ddos.js"></script>
+<script src="js/modules/deface.js"></script>
+<script src="js/modules/osint.js"></script>
+<script src="js/modules/wordpress.js"></script>
+<script src="js/modules/sql.js"></script>
+<script src="js/modules/admin.js"></script>
+<script src="js/modules/bruteforce.js"></script>
+<script src="js/modules/advanced.js"></script>
+
+<script>
+    // Proteksi: jika belum login, redirect ke index
+    if(sessionStorage.getItem('lynzxz_auth') !== 'true') {
+        window.location.href = 'index.html';
+    }
+    
+    // Live time
+    function updateTime() {
+        const now = new Date();
+        document.getElementById('liveTime').innerText = now.toLocaleTimeString();
+    }
+    setInterval(updateTime, 1000);
+    updateTime();
+    
+    // Load modul berdasarkan menu yang dipilih
+    let currentModule = 'ddos';
+    
+    function loadModule(moduleName) {
+        currentModule = moduleName;
+        const container = document.getElementById('moduleContainer');
+        const titleMap = {
+            ddos: '⚡ DDoS Attack Multi-Method',
+            deface: '🎨 Deface Generator Pro',
+            osint: '🕵️ OSINT Intelligence Hub',
+            wp: '🔍 WordPress Vulnerability Scanner',
+            sql: '💉 SQL Injection Scanner',
+            admin: '🔎 Admin Panel Finder',
+            brute: '🔑 Brute Force Attack',
+            advanced: '💀 Advanced Arsenal'
+        };
+        document.getElementById('moduleTitle').innerHTML = titleMap[moduleName];
+        
+        // Panggil fungsi render modul yang sudah disediakan masing-masing file JS
+        if(moduleName === 'ddos' && window.renderDDoS) window.renderDDoS(container);
+        else if(moduleName === 'deface' && window.renderDeface) window.renderDeface(container);
+        else if(moduleName === 'osint' && window.renderOSINT) window.renderOSINT(container);
+        else if(moduleName === 'wp' && window.renderWordPress) window.renderWordPress(container);
+        else if(moduleName === 'sql' && window.renderSQL) window.renderSQL(container);
+        else if(moduleName === 'admin' && window.renderAdmin) window.renderAdmin(container);
+        else if(moduleName === 'brute' && window.renderBrute) window.renderBrute(container);
+        else if(moduleName === 'advanced' && window.renderAdvanced) window.renderAdvanced(container);
+        else {
+            container.innerHTML = '<div class="module-card">Modul sedang dimuat...</div>';
+        }
+        
+        // Update active menu style
+        document.querySelectorAll('.menu-item').forEach(item => {
+            if(item.dataset.module === moduleName) item.classList.add('active');
+            else item.classList.remove('active');
+        });
+    }
+    
+    // Event listener menu
+    document.querySelectorAll('.menu-item').forEach(item => {
+        item.addEventListener('click', () => {
+            const module = item.dataset.module;
+            loadModule(module);
+        });
+    });
+    
+    // Inisialisasi logs dan modul pertama
+    initLogs();
+    loadModule('ddos');
+    
+    // Tambah log awal
+    addLog('system', 'Dashboard', 'Session', 'Login berhasil sebagai @LynzxzCreator', 'success');
+</script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+{
+  "name": "lynzxz-hub",
+  "version": "2.0.0",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

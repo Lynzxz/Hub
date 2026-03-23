@@ -1,0 +1,277 @@
+/* ==================== GLOBAL RESET ==================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', 'Courier New', monospace;
+    background: #0a0f1a;
+    color: #e0e0e0;
+    overflow-x: hidden;
+}
+
+/* ==================== SCROLLBAR ==================== */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #1a1f2a;
+}
+::-webkit-scrollbar-thumb {
+    background: #00ccff;
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #ff44cc;
+}
+
+/* ==================== ANIMATIONS ==================== */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes glowPulse {
+    0% { box-shadow: 0 0 5px rgba(0,255,255,0.3); }
+    100% { box-shadow: 0 0 20px rgba(0,255,255,0.6); }
+}
+
+@keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-30px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* ==================== DASHBOARD LAYOUT ==================== */
+.dashboard {
+    display: flex;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0a0f1a 0%, #03060c 100%);
+}
+
+/* Sidebar Menu */
+.sidebar {
+    width: 280px;
+    background: rgba(5, 10, 20, 0.8);
+    backdrop-filter: blur(8px);
+    border-right: 1px solid rgba(0, 255, 255, 0.2);
+    padding: 25px 15px;
+    transition: all 0.3s;
+    z-index: 10;
+}
+
+.logo-sidebar {
+    text-align: center;
+    margin-bottom: 35px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(0,255,255,0.3);
+}
+
+.logo-sidebar h2 {
+    background: linear-gradient(135deg, #00ffff, #ff44cc);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-size: 24px;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 18px;
+    margin: 8px 0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #bbccff;
+    font-weight: 500;
+}
+
+.menu-item i {
+    font-size: 20px;
+    width: 28px;
+    text-align: center;
+}
+
+.menu-item:hover {
+    background: rgba(0, 255, 255, 0.1);
+    transform: translateX(5px);
+    color: #0ff;
+}
+
+.menu-item.active {
+    background: linear-gradient(90deg, rgba(0,255,255,0.2), rgba(0,255,255,0.05));
+    border-left: 3px solid #0ff;
+    color: #0ff;
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    padding: 20px 30px;
+    overflow-y: auto;
+}
+
+/* Top Bar */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(0,255,255,0.2);
+}
+
+.top-bar h1 {
+    font-size: 22px;
+    font-weight: 500;
+    color: #ccddff;
+}
+
+.session-info {
+    font-size: 12px;
+    background: rgba(0,0,0,0.4);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-family: monospace;
+}
+
+/* Module Container */
+.module-container {
+    animation: fadeIn 0.4s ease;
+}
+
+.module-card {
+    background: rgba(10, 20, 30, 0.5);
+    backdrop-filter: blur(4px);
+    border-radius: 20px;
+    padding: 25px;
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    margin-bottom: 20px;
+}
+
+/* Log Panel (Global) */
+.log-panel {
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 16px;
+    padding: 15px;
+    margin-top: 20px;
+    border: 1px solid #336699;
+}
+
+.log-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-weight: bold;
+    color: #0ff;
+}
+
+.log-list {
+    max-height: 250px;
+    overflow-y: auto;
+    font-family: monospace;
+    font-size: 12px;
+}
+
+.log-entry {
+    padding: 6px 8px;
+    border-bottom: 1px solid #224466;
+    color: #bbffbb;
+    animation: slideInLeft 0.2s;
+}
+
+.log-entry .time {
+    color: #88aaff;
+    margin-right: 12px;
+}
+
+.log-entry.success { border-left: 3px solid #0f0; }
+.log-entry.error { border-left: 3px solid #f44; color: #ffaaaa; }
+.log-entry.info { border-left: 3px solid #0ff; }
+
+.clear-log {
+    background: none;
+    border: 1px solid #ff6666;
+    color: #ff6666;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.clear-log:hover {
+    background: #ff6666;
+    color: black;
+}
+
+/* Form Elements */
+.input-group-module {
+    margin-bottom: 18px;
+}
+.input-group-module label {
+    display: block;
+    margin-bottom: 6px;
+    color: #aaccff;
+    font-size: 13px;
+}
+.input-group-module input, 
+.input-group-module select, 
+.input-group-module textarea {
+    width: 100%;
+    padding: 10px 12px;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid #2a4c7a;
+    border-radius: 10px;
+    color: #0ff;
+    font-family: monospace;
+}
+.input-group-module input:focus, 
+.input-group-module select:focus {
+    outline: none;
+    border-color: #0ff;
+    box-shadow: 0 0 5px rgba(0,255,255,0.3);
+}
+
+.btn-primary {
+    background: linear-gradient(90deg, #0066aa, #00aa88);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 30px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+    margin-right: 10px;
+}
+.btn-primary:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 12px rgba(0,255,255,0.5);
+}
+.btn-danger {
+    background: linear-gradient(90deg, #aa3366, #ff4444);
+}
+.btn-small {
+    padding: 4px 12px;
+    font-size: 12px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 70px;
+        padding: 15px 5px;
+    }
+    .sidebar .menu-item span {
+        display: none;
+    }
+    .logo-sidebar h2 {
+        font-size: 14px;
+    }
+    .main-content {
+        padding: 15px;
+    }
+}
