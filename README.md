@@ -1,2 +1,0 @@
-# Hub
-for the globe
