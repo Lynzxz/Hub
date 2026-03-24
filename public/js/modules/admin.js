@@ -1,143 +1,150 @@
-// ==================== ADMIN PANEL FINDER ====================
+// ==================== DEVELOPER PANEL ====================
 // Created by @LynzxzCreator
+// Hanya bisa diakses oleh developer/owner
 
 function renderAdmin(container) {
+    if(!window.isDeveloper || !window.isDeveloper()) {
+        container.innerHTML = '<div class="module-card"><h3>⛔ ACCESS DENIED</h3><p>Hanya developer yang dapat mengakses panel ini.</p></div>';
+        return;
+    }
+    
+    const users = window.getAllUsers ? window.getAllUsers() : {};
+    const logs = window.getAccessLogs ? window.getAccessLogs() : [];
+    const blacklist = window.getProtectedDomains ? window.getProtectedDomains() : [];
+    
     container.innerHTML = `
         <div class="module-card">
-            <h3><i class="fas fa-user-secret"></i> Admin Panel Finder</h3>
-            <p style="font-size:12px; color:#88aaff; margin-bottom:15px;">Discover hidden admin panels, login pages, and backend interfaces</p>
+            <h3><i class="fas fa-crown"></i> DEVELOPER PANEL</h3>
+            <p style="font-size:12px; color:#ffaa44;">🔥 Kontrol penuh: User Management, Protected Targets, System Logs</p>
             
-            <div class="input-group-module">
-                <label>🎯 Target URL</label>
-                <input type="text" id="adminTarget" placeholder="https://example.com" value="https://wordpress.org">
+            <!-- TABS -->
+            <div style="display:flex; gap:10px; margin:20px 0; border-bottom:1px solid #336699;">
+                <button class="admin-tab active" data-tab="users">👥 User Management</button>
+                <button class="admin-tab" data-tab="protect">🛡️ Protected Targets</button>
+                <button class="admin-tab" data-tab="logs">📋 System Logs</button>
             </div>
             
-            <div class="input-group-module">
-                <label>⚙️ Scan Depth</label>
-                <select id="adminDepth">
-                    <option value="common">Common Panels Only (Fast)</option>
-                    <option value="extended">Extended List (Medium)</option>
-                    <option value="full">Full Scan (Comprehensive)</option>
-                </select>
+            <!-- USERS TAB -->
+            <div id="adminUsersTab" class="admin-tab-content active">
+                <h4>Registered Users</h4>
+                <div style="overflow-x:auto;">
+                    <table style="width:100%; border-collapse:collapse;">
+                        <tr style="border-bottom:1px solid #336699;">
+                            <th style="padding:8px; text-align:left;">Username</th>
+                            <th style="padding:8px; text-align:left;">Role</th>
+                            <th style="padding:8px; text-align:left;">Created</th>
+                            <th style="padding:8px; text-align:left;">Actions</th>
+                        </tr>
+                        ${Object.entries(users).map(([username, data]) => `
+                            <tr style="border-bottom:1px solid #224466;">
+                                <td style="padding:8px;">${username}</td>
+                                <td style="padding:8px;">${data.role === 'developer' ? '👑 DEVELOPER' : data.role === 'premium' ? '⭐ PREMIUM' : '👤 USER'}</td>
+                                <td style="padding:8px;">${new Date(data.createdAt).toLocaleDateString() || '-'}</td>
+                                <td style="padding:8px;">
+                                    ${data.role !== 'developer' ? `
+                                        <button onclick="window.promoteToPremium('${username}'); location.reload();" style="background:#0ff; color:#000; padding:4px 8px; border:none; border-radius:4px; cursor:pointer; margin-right:5px;">⭐ Premium</button>
+                                        <button onclick="window.deleteUser('${username}'); location.reload();" style="background:#ff4444; color:#fff; padding:4px 8px; border:none; border-radius:4px; cursor:pointer;">🗑️ Delete</button>
+                                    ` : '<span style="color:#ffaa44;">🔒 Protected</span>'}
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </table>
+                </div>
+                <div style="margin-top:15px;">
+                    <h4>Create New User</h4>
+                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                        <input type="text" id="newUsername" placeholder="Username" style="background:#000; border:1px solid #0ff; color:#0f0; padding:8px;">
+                        <input type="password" id="newPassword" placeholder="Password" style="background:#000; border:1px solid #0ff; color:#0f0; padding:8px;">
+                        <select id="newRole" style="background:#000; border:1px solid #0ff; color:#0f0; padding:8px;">
+                            <option value="premium">Premium User</option>
+                            <option value="user">Regular User</option>
+                        </select>
+                        <button id="createUserBtn" style="background:#0ff; color:#000; padding:8px 16px; border:none; border-radius:8px; cursor:pointer;">CREATE</button>
+                    </div>
+                </div>
             </div>
             
-            <div style="display: flex; gap: 10px;">
-                <button class="btn-primary" id="scanAdminBtn"><i class="fas fa-search"></i> FIND ADMIN PANELS</button>
-                <button class="btn-primary" id="clearAdminBtn" style="background:#333;"><i class="fas fa-eraser"></i> CLEAR</button>
+            <!-- PROTECTED TARGETS TAB -->
+            <div id="adminProtectTab" class="admin-tab-content" style="display:none;">
+                <h4>Protected Domains (Anti-Senjata Makan Tuan)</h4>
+                <p style="font-size:12px;">Premium user TIDAK BISA menyerang domain di daftar ini.</p>
+                <div style="margin:15px 0;">
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="newDomain" placeholder="contoh: lynzxz.vercel.app" style="flex:1; background:#000; border:1px solid #0ff; color:#0f0; padding:10px;">
+                        <button id="addDomainBtn" style="background:#0ff; color:#000; padding:10px 20px; border:none; border-radius:8px; cursor:pointer;">➕ ADD</button>
+                    </div>
+                </div>
+                <div style="background:#000; padding:10px; border-radius:8px;">
+                    ${blacklist.length === 0 ? '<div style="color:#888;">Belum ada domain yang diproteksi</div>' : blacklist.map(d => `
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding:8px; border-bottom:1px solid #224466;">
+                            <span>🔒 ${d}</span>
+                            <button onclick="window.removeProtectedDomain('${d}'); location.reload();" style="background:#ff4444; color:#fff; padding:4px 12px; border:none; border-radius:4px; cursor:pointer;">Hapus</button>
+                        </div>
+                    `).join('')}
+                </div>
             </div>
             
-            <div id="adminResult" style="margin-top: 20px; background: #00000066; padding: 15px; border-radius: 12px; font-family: monospace;">
-                <div style="color:#888;">📋 Admin panels found will appear here...</div>
+            <!-- LOGS TAB -->
+            <div id="adminLogsTab" class="admin-tab-content" style="display:none;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+                    <h4>Access Logs</h4>
+                    <button id="clearLogsBtn" style="background:#ff4444; color:#fff; padding:6px 12px; border:none; border-radius:6px; cursor:pointer;">🗑️ Clear All Logs</button>
+                </div>
+                <div style="background:#000; padding:10px; border-radius:8px; max-height:400px; overflow-y:auto;">
+                    ${logs.length === 0 ? '<div style="color:#888;">Belum ada aktivitas</div>' : logs.map(log => `
+                        <div style="padding:8px; border-bottom:1px solid #224466; font-family:monospace; font-size:11px;">
+                            <span style="color:#88ff88;">[${new Date(log.timestamp).toLocaleString()}]</span>
+                            <span style="color:#0ff;">${log.user}</span> → ${log.action} ${log.target ? `→ ${log.target}` : ''}
+                        </div>
+                    `).join('')}
+                </div>
             </div>
         </div>
     `;
     
-    const scanBtn = document.getElementById('scanAdminBtn');
-    const clearBtn = document.getElementById('clearAdminBtn');
-    const targetInput = document.getElementById('adminTarget');
-    const depthSelect = document.getElementById('adminDepth');
-    const resultDiv = document.getElementById('adminResult');
+    // Tab switching
+    document.querySelectorAll('.admin-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.admin-tab-content').forEach(t => t.style.display = 'none');
+            tab.classList.add('active');
+            const tabId = tab.dataset.tab;
+            document.getElementById(`admin${tabId.charAt(0).toUpperCase() + tabId.slice(1)}Tab`).style.display = 'block';
+        });
+    });
     
-    const commonPanels = [
-        '/admin', '/login', '/wp-admin', '/administrator', '/cpanel', '/dashboard',
-        '/admin/login', '/admincp', '/backend', '/manage', '/controlpanel', '/auth'
-    ];
-    
-    const extendedPanels = [
-        '/admin', '/login', '/wp-admin', '/administrator', '/cpanel', '/dashboard',
-        '/admin/login', '/admincp', '/backend', '/manage', '/controlpanel', '/auth',
-        '/user/login', '/admin/index.php', '/login.php', '/adminarea', '/panel',
-        '/webadmin', '/siteadmin', '/adm', '/adminpanel', '/console'
-    ];
-    
-    const fullPanels = [
-        ...extendedPanels,
-        '/cms/login', '/wp-login.php', '/login/admin', '/staff', '/operator',
-        '/secure', '/private', '/hidden', '/secret', '/portal', '/gateway'
-    ];
-    
-    async function findAdminPanels() {
-        let target = targetInput.value.trim();
-        if(!target) {
-            resultDiv.innerHTML = '<div style="color:#ff6666;">❌ Please enter a target URL</div>';
-            return;
-        }
-        
-        if(!target.startsWith('http')) target = 'https://' + target;
-        
-        resultDiv.innerHTML = '<div style="color:#ffaa44;">🔍 Scanning for admin panels... This may take a moment</div>';
-        addLog('scan', 'Admin Finder', target, `Starting ${depthSelect.value} admin panel scan`, 'info');
-        
-        let panelsToScan = [];
-        if(depthSelect.value === 'common') panelsToScan = commonPanels;
-        else if(depthSelect.value === 'extended') panelsToScan = extendedPanels;
-        else panelsToScan = fullPanels;
-        
-        await delay(1000);
-        
-        const foundPanels = [];
-        
-        for(const panel of panelsToScan) {
-            await delay(200);
-            // Simulasi detection
-            const found = Math.random() > 0.85;
-            if(found) {
-                foundPanels.push({
-                    path: panel,
-                    status: [200, 401, 403, 302][Math.floor(Math.random() * 4)],
-                    title: panel.includes('wp') ? 'WordPress Admin' : 
-                           panel.includes('admin') ? 'Admin Login' : 
-                           panel.includes('login') ? 'Login Page' : 'Restricted Area'
-                });
+    // Create user
+    document.getElementById('createUserBtn')?.addEventListener('click', () => {
+        const username = document.getElementById('newUsername').value;
+        const password = document.getElementById('newPassword').value;
+        const role = document.getElementById('newRole').value;
+        if(username && password) {
+            const users = JSON.parse(localStorage.getItem('lynzxz_users') || '{}');
+            if(!users[username]) {
+                users[username] = { password, role, createdAt: new Date().toISOString() };
+                localStorage.setItem('lynzxz_users', JSON.stringify(users));
+                addLog('admin', 'User Management', username, `User ${username} created with role ${role}`, 'success');
+                location.reload();
+            } else {
+                alert('Username already exists');
             }
         }
-        
-        let html = '';
-        
-        if(foundPanels.length > 0) {
-            html = `
-                <div style="border-left: 3px solid #0ff; padding-left: 12px; margin-bottom: 15px;">
-                    <strong style="color:#0ff;">🔓 ${foundPanels.length} Admin Panel(s) Found!</strong>
-                </div>
-                <table style="width:100%; border-collapse: collapse;">
-                    <tr style="border-bottom:1px solid #336699;">
-                        <th style="text-align:left; padding:8px;">Path</th>
-                        <th style="text-align:left; padding:8px;">Status</th>
-                        <th style="text-align:left; padding:8px;">Title/Type</th>
-                    </tr>
-                    ${foundPanels.map(p => `
-                        <tr style="border-bottom:1px solid #224466;">
-                            <td style="padding:8px;"><a href="${target}${p.path}" target="_blank" style="color:#0ff;">${p.path}</a></td>
-                            <td style="padding:8px;">${p.status}</td>
-                            <td style="padding:8px;">${p.title}</td>
-                        </tr>
-                    `).join('')}
-                </table>
-                <div style="margin-top: 15px; background:#00330033; padding:10px; border-radius:8px;">
-                    <strong style="color:#88ff88;">💡 Tips:</strong><br>
-                    • Try default credentials: admin/admin, admin/password<br>
-                    • Check if login page has password reset option<br>
-                    • Look for exposed version information
-                </div>
-            `;
-            addLog('vulnerability', 'Admin Finder', target, `${foundPanels.length} admin panels discovered`, 'warning');
-        } else {
-            html = `
-                <div style="border-left: 3px solid #0f0; padding-left: 12px;">
-                    <strong style="color:#88ff88;">✅ No exposed admin panels found</strong>
-                </div>
-                <div style="margin-top: 10px; color:#aaa;">Target appears to have hidden or protected admin interfaces.</div>
-            `;
-            addLog('scan', 'Admin Finder', target, `No panels found`, 'success');
+    });
+    
+    // Add domain
+    document.getElementById('addDomainBtn')?.addEventListener('click', () => {
+        const domain = document.getElementById('newDomain').value.trim();
+        if(domain) {
+            window.addProtectedDomain(domain);
+            location.reload();
         }
-        
-        resultDiv.innerHTML = html;
-    }
+    });
     
-    function clearResults() {
-        resultDiv.innerHTML = '<div style="color:#888;">📋 Admin panels found will appear here...</div>';
-    }
-    
-    scanBtn.onclick = findAdminPanels;
-    clearBtn.onclick = clearResults;
+    // Clear logs
+    document.getElementById('clearLogsBtn')?.addEventListener('click', () => {
+        if(confirm('Hapus semua log?')) {
+            window.clearAccessLogs();
+            location.reload();
+        }
+    });
 }
