@@ -6,7 +6,6 @@
     <title>Lynzxz Hub | Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* (style sama seperti sebelumnya, tidak berubah) */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: linear-gradient(135deg, #0a0f1a 0%, #03060c 100%);
@@ -158,7 +157,7 @@
             <div class="menu-item" data-module="deface"><i class="fas fa-paint-roller"></i> <span>Deface Generator</span></div>
             <div class="menu-item" data-module="wordpress"><i class="fab fa-wordpress"></i> <span>WordPress Checker</span></div>
             <div class="menu-item" data-module="sql"><i class="fas fa-database"></i> <span>SQL Inject Scanner</span></div>
-            <div class="menu-item" data-module="adminfinder"><i class="fas fa-user-secret"></i> <span>Admin Finder</span></div>
+            <div class="menu-item" data-module="adminfinder"><i class="fas fa-user-secret"></i> <span>Admin Panel Finder</span></div>
             <div class="menu-item" data-module="bruteforce"><i class="fas fa-key"></i> <span>Brute Force</span></div>
             <div class="menu-item" data-module="advanced"><i class="fas fa-skull"></i> <span>Advanced Tools</span></div>
             <div class="menu-item" data-module="osint"><i class="fas fa-search-location"></i> <span>OSINT Intel</span></div>
@@ -259,11 +258,11 @@ const moduleMap = {
     deface: { file: 'deface.js', func: 'renderDeface' },
     wordpress: { file: 'wordpress.js', func: 'renderWordPress' },
     sql: { file: 'sql.js', func: 'renderSQL' },
-    adminfinder: { file: 'admin.js', func: 'renderAdmin' },
-    bruteforce: { file: 'bruteforce.js', func: 'renderBrute' },
+    adminfinder: { file: 'adminfinder.js', func: 'renderAdminFinder' },
+    bruteforce: { file: 'bruteforce.js', func: 'renderBruteForce' },
     advanced: { file: 'advanced.js', func: 'renderAdvanced' },
     osint: { file: 'osint.js', func: 'renderOSINT' },
-    adminpanel: { file: null, func: null } // built-in
+    adminpanel: { file: null, func: null }
 };
 
 let currentModule = 'ddos';
@@ -296,16 +295,13 @@ function loadModule(moduleName) {
         return;
     }
     
-    // Check if function already exists
     if(window[mod.func]) {
         window[mod.func](container);
         return;
     }
     
-    // Load script if not already loaded
     if(loadedScripts[mod.file]) {
-        // script loaded but function not defined? maybe error
-        container.innerHTML = `<div class="module-card">❌ Modul ${moduleName} gagal dimuat. Fungsi ${mod.func} tidak ditemukan.</div>`;
+        container.innerHTML = `<div class="module-card">❌ Modul ${moduleName} gagal dimuat. Fungsi ${mod.func} tidak ditemukan di ${mod.file}.</div>`;
         return;
     }
     
@@ -325,7 +321,7 @@ function loadModule(moduleName) {
     loadedScripts[mod.file] = true;
 }
 
-// ==================== DEVELOPER PANEL (BUILT-IN) ====================
+// ==================== DEVELOPER PANEL ====================
 function renderDeveloperPanel(container) {
     if(!isDeveloper()) {
         container.innerHTML = `<div class="module-card"><h3>⛔ ACCESS DENIED</h3><p>Hanya Developer yang dapat mengakses panel ini.</p></div>`;
@@ -347,7 +343,6 @@ function renderDeveloperPanel(container) {
                 <button class="dev-tab" data-tab="protect">🛡️ Protected Targets</button>
                 <button class="dev-tab" data-tab="logs">📋 System Logs</button>
             </div>
-            <!-- Users Tab -->
             <div id="devUsers" class="dev-tab-content active">
                 <h4>Registered Users</h4>
                 <div style="overflow-x:auto;">
@@ -355,14 +350,11 @@ function renderDeveloperPanel(container) {
                         <tr style="border-bottom:2px solid #0ff;"><th>Username</th><th>Role</th><th>Created</th><th>Actions</th> </tr>
                         ${Object.entries(users).map(([uname, data]) => `
                             <tr style="border-bottom:1px solid #224466;">
-                                <td>${uname}</td>
-                                <td>${data.role === 'developer' ? '👑 DEVELOPER' : data.role === 'premium' ? '⭐ PREMIUM' : '👤 USER'}</td>
-                                <td>${data.createdAt ? new Date(data.createdAt).toLocaleDateString() : '-'}</td>
-                                <td>${data.role !== 'developer' ? `
-                                    <button class="promote-user" data-username="${uname}" style="background:#0ff; border:none; padding:2px 8px; border-radius:4px; cursor:pointer;">⭐ Premium</button>
-                                    <button class="delete-user" data-username="${uname}" style="background:#f44; border:none; padding:2px 8px; border-radius:4px; cursor:pointer;">🗑️</button>
-                                ` : '<span style="color:#aaa;">🔒</span>'}</td>
-                            </tr>
+                                <td style="padding:6px;">${uname}</td>
+                                <td style="padding:6px;">${data.role === 'developer' ? '👑 DEVELOPER' : data.role === 'premium' ? '⭐ PREMIUM' : '👤 USER'}</td>
+                                <td style="padding:6px;">${data.createdAt ? new Date(data.createdAt).toLocaleDateString() : '-'}</td>
+                                <td style="padding:6px;">${data.role !== 'developer' ? `<button class="promote-user" data-username="${uname}" style="background:#0ff; border:none; padding:2px 8px; border-radius:4px; cursor:pointer;">⭐ Premium</button> <button class="delete-user" data-username="${uname}" style="background:#f44; border:none; padding:2px 8px; border-radius:4px; cursor:pointer;">🗑️</button>` : '<span style="color:#aaa;">🔒</span>'}</td>
+                             </tr>
                         `).join('')}
                     </table>
                 </div>
@@ -377,32 +369,21 @@ function renderDeveloperPanel(container) {
                     <button id="createUserBtn" style="background:#0ff; border:none; padding:8px 16px; cursor:pointer;">CREATE</button>
                 </div>
             </div>
-            <!-- Keys Tab -->
             <div id="devKeys" class="dev-tab-content" style="display:none;">
                 <h4>Generate Registration Keys</h4>
                 <div style="display:flex; gap:10px; margin-bottom:20px;">
-                    <input type="number" id="keyCount" placeholder="Jumlah key" value="1" min="1" max="10" style="width:100px; background:#000; border:1px solid #0ff;">
+                    <input type="number" id="keyCount" value="1" min="1" max="10" style="width:100px; background:#000; border:1px solid #0ff;">
                     <button id="generateKeysBtn" style="background:#0ff; border:none; padding:8px 16px; cursor:pointer;">🔑 Generate Key(s)</button>
                 </div>
                 <h4>Unused Keys</h4>
                 <div style="background:#000; padding:10px; border-radius:8px; max-height:200px; overflow-y:auto;">
-                    ${unusedKeys.length === 0 ? '<div>Belum ada key yang belum digunakan.</div>' : unusedKeys.map(k => `
-                        <div style="display:flex; justify-content:space-between; padding:6px; border-bottom:1px solid #224466;">
-                            <span><i class="fas fa-key"></i> ${k.key}</span>
-                            <button class="delete-key" data-key="${k.key}" style="background:#f44; border:none; padding:2px 8px; cursor:pointer;">Hapus</button>
-                        </div>
-                    `).join('')}
+                    ${unusedKeys.length === 0 ? '<div>Belum ada key.</div>' : unusedKeys.map(k => `<div style="display:flex; justify-content:space-between; padding:6px; border-bottom:1px solid #224466;"><span>🔑 ${k.key}</span><button class="delete-key" data-key="${k.key}" style="background:#f44; border:none; padding:2px 8px; cursor:pointer;">Hapus</button></div>`).join('')}
                 </div>
                 <h4>Used Keys</h4>
                 <div style="background:#000; padding:10px; border-radius:8px; max-height:150px; overflow-y:auto;">
-                    ${keys.filter(k => k.usedBy).length === 0 ? '<div>Belum ada key yang digunakan.</div>' : keys.filter(k => k.usedBy).map(k => `
-                        <div style="padding:4px; border-bottom:1px solid #224466; font-size:11px;">
-                            ${k.key} → <strong>${k.usedBy}</strong> (${new Date(k.usedAt).toLocaleString()})
-                        </div>
-                    `).join('')}
+                    ${keys.filter(k => k.usedBy).length === 0 ? '<div>Belum ada key digunakan.</div>' : keys.filter(k => k.usedBy).map(k => `<div style="padding:4px; border-bottom:1px solid #224466;">${k.key} → <strong>${k.usedBy}</strong> (${new Date(k.usedAt).toLocaleString()})</div>`).join('')}
                 </div>
             </div>
-            <!-- Protect Tab -->
             <div id="devProtect" class="dev-tab-content" style="display:none;">
                 <h4>Protected Domains</h4>
                 <div style="display:flex; gap:10px; margin:15px 0;">
@@ -410,29 +391,19 @@ function renderDeveloperPanel(container) {
                     <button id="addDomainBtn" style="background:#0ff; border:none; padding:10px 20px; cursor:pointer;">ADD</button>
                 </div>
                 <div style="background:#000; padding:10px; border-radius:8px;">
-                    ${blacklist.length === 0 ? '<div>Belum ada domain diproteksi</div>' : blacklist.map(d => `
-                        <div style="display:flex; justify-content:space-between; padding:6px; border-bottom:1px solid #224466;">
-                            <span>🔒 ${d}</span>
-                            <button class="remove-domain" data-domain="${d}" style="background:#f44; border:none; padding:2px 8px; cursor:pointer;">Hapus</button>
-                        </div>
-                    `).join('')}
+                    ${blacklist.length === 0 ? '<div>Belum ada domain diproteksi</div>' : blacklist.map(d => `<div style="display:flex; justify-content:space-between; padding:6px; border-bottom:1px solid #224466;"><span>🔒 ${d}</span><button class="remove-domain" data-domain="${d}" style="background:#f44; border:none; padding:2px 8px; cursor:pointer;">Hapus</button></div>`).join('')}
                 </div>
             </div>
-            <!-- Logs Tab -->
             <div id="devLogs" class="dev-tab-content" style="display:none;">
                 <div style="display:flex; justify-content:space-between;"><h4>Access Logs</h4><button id="clearLogsBtn" style="background:#f44; border:none; padding:4px 12px; cursor:pointer;">Clear All</button></div>
                 <div style="background:#000; padding:10px; border-radius:8px; max-height:300px; overflow-y:auto; font-size:11px;">
-                    ${logs.length === 0 ? '<div>Belum ada aktivitas</div>' : logs.map(log => `
-                        <div style="padding:4px; border-bottom:1px solid #224466;">
-                            [${new Date(log.timestamp).toLocaleString()}] <strong>${log.user}</strong> → ${log.action} ${log.target ? `→ ${log.target}` : ''}
-                        </div>
-                    `).join('')}
+                    ${logs.length === 0 ? '<div>Belum ada aktivitas</div>' : logs.map(log => `<div style="padding:4px; border-bottom:1px solid #224466;">[${new Date(log.timestamp).toLocaleString()}] <strong>${log.user}</strong> → ${log.action} ${log.target ? `→ ${log.target}` : ''}</div>`).join('')}
                 </div>
             </div>
         </div>
     `;
     
-    // Attach events using event delegation to avoid reload issues
+    // Event handlers (sama seperti sebelumnya, tidak berubah)
     container.querySelectorAll('.dev-tab').forEach(tab => {
         tab.onclick = (e) => {
             e.stopPropagation();
@@ -443,134 +414,89 @@ function renderDeveloperPanel(container) {
             container.querySelector(`#dev${tabId.charAt(0).toUpperCase() + tabId.slice(1)}`).style.display = 'block';
         };
     });
-    
-    // Create user
-    const createBtn = container.querySelector('#createUserBtn');
-    if(createBtn) {
-        createBtn.onclick = (e) => {
-            e.stopPropagation();
-            const uname = container.querySelector('#newUsername').value.trim();
-            const pwd = container.querySelector('#newPassword').value;
-            const role = container.querySelector('#newRole').value;
-            if(!uname || !pwd) { alert('Isi username dan password'); return; }
-            const users = JSON.parse(localStorage.getItem('lynzxz_users') || '{}');
-            if(users[uname]) { alert('Username sudah ada'); return; }
-            users[uname] = { password: pwd, role: role, createdAt: new Date().toISOString() };
-            localStorage.setItem('lynzxz_users', JSON.stringify(users));
-            addLog('admin', 'User Management', uname, `User ${uname} dibuat (role ${role})`, 'success');
-            location.reload();
-        };
-    }
-    
-    // Generate keys
-    const genBtn = container.querySelector('#generateKeysBtn');
-    if(genBtn) {
-        genBtn.onclick = (e) => {
-            e.stopPropagation();
-            let count = parseInt(container.querySelector('#keyCount').value) || 1;
-            if(count > 10) count = 10;
-            const keys = JSON.parse(localStorage.getItem('lynzxz_keys') || '[]');
-            const newKeys = [];
-            for(let i=0; i<count; i++) {
-                const key = Math.random().toString(36).substring(2, 10).toUpperCase();
-                newKeys.push({ key, usedBy: null, createdAt: new Date().toISOString() });
-            }
-            localStorage.setItem('lynzxz_keys', JSON.stringify([...keys, ...newKeys]));
-            addLog('admin', 'Key Management', `generated ${count} key(s)`, `${count} key(s) dibuat`, 'success');
-            location.reload();
-        };
-    }
-    
-    // Delete key
+    container.querySelector('#createUserBtn')?.addEventListener('click', () => {
+        const uname = container.querySelector('#newUsername').value.trim();
+        const pwd = container.querySelector('#newPassword').value;
+        const role = container.querySelector('#newRole').value;
+        if(!uname || !pwd) { alert('Isi username dan password'); return; }
+        const users = JSON.parse(localStorage.getItem('lynzxz_users') || '{}');
+        if(users[uname]) { alert('Username sudah ada'); return; }
+        users[uname] = { password: pwd, role: role, createdAt: new Date().toISOString() };
+        localStorage.setItem('lynzxz_users', JSON.stringify(users));
+        addLog('admin', 'User Management', uname, `User ${uname} dibuat`, 'success');
+        location.reload();
+    });
+    container.querySelector('#generateKeysBtn')?.addEventListener('click', () => {
+        let count = parseInt(container.querySelector('#keyCount').value) || 1;
+        if(count > 10) count = 10;
+        const keys = JSON.parse(localStorage.getItem('lynzxz_keys') || '[]');
+        for(let i=0; i<count; i++) {
+            const key = Math.random().toString(36).substring(2, 10).toUpperCase();
+            keys.push({ key, usedBy: null, createdAt: new Date().toISOString() });
+        }
+        localStorage.setItem('lynzxz_keys', JSON.stringify(keys));
+        addLog('admin', 'Key Management', `${count} key(s)`, `${count} key(s) dibuat`, 'success');
+        location.reload();
+    });
     container.querySelectorAll('.delete-key').forEach(btn => {
-        btn.onclick = (e) => {
-            e.stopPropagation();
+        btn.onclick = () => {
             const key = btn.dataset.key;
-            if(confirm(`Hapus key ${key}?`)) {
-                let keys = JSON.parse(localStorage.getItem('lynzxz_keys') || '[]');
-                keys = keys.filter(k => k.key !== key);
-                localStorage.setItem('lynzxz_keys', JSON.stringify(keys));
-                addLog('admin', 'Key Management', key, `Key ${key} dihapus`, 'info');
-                location.reload();
-            }
+            let keys = JSON.parse(localStorage.getItem('lynzxz_keys') || '[]');
+            keys = keys.filter(k => k.key !== key);
+            localStorage.setItem('lynzxz_keys', JSON.stringify(keys));
+            location.reload();
         };
     });
-    
-    // Promote user
     container.querySelectorAll('.promote-user').forEach(btn => {
-        btn.onclick = (e) => {
-            e.stopPropagation();
+        btn.onclick = () => {
             const uname = btn.dataset.username;
             const users = JSON.parse(localStorage.getItem('lynzxz_users') || '{}');
             if(users[uname] && users[uname].role !== 'developer') {
                 users[uname].role = 'premium';
                 localStorage.setItem('lynzxz_users', JSON.stringify(users));
-                addLog('admin', 'User Management', uname, `User ${uname} dipromosikan ke premium`, 'success');
                 location.reload();
             }
         };
     });
-    
-    // Delete user
     container.querySelectorAll('.delete-user').forEach(btn => {
-        btn.onclick = (e) => {
-            e.stopPropagation();
+        btn.onclick = () => {
             const uname = btn.dataset.username;
             if(confirm(`Hapus user ${uname}?`)) {
                 const users = JSON.parse(localStorage.getItem('lynzxz_users') || '{}');
                 if(users[uname] && users[uname].role !== 'developer') {
                     delete users[uname];
                     localStorage.setItem('lynzxz_users', JSON.stringify(users));
-                    addLog('admin', 'User Management', uname, `User ${uname} dihapus`, 'warning');
                     location.reload();
                 }
             }
         };
     });
-    
-    // Add domain
-    const addDomainBtn = container.querySelector('#addDomainBtn');
-    if(addDomainBtn) {
-        addDomainBtn.onclick = (e) => {
-            e.stopPropagation();
-            let domain = container.querySelector('#newDomain').value.trim();
-            if(!domain) return;
-            domain = domain.replace(/^https?:\/\//, '').split('/')[0];
-            const black = JSON.parse(localStorage.getItem('lynzxz_blacklist') || '[]');
-            if(!black.includes(domain)) {
-                black.push(domain);
-                localStorage.setItem('lynzxz_blacklist', JSON.stringify(black));
-                addLog('security', 'Blacklist', domain, `Domain ${domain} diproteksi`, 'success');
-                location.reload();
-            }
-        };
-    }
-    
-    // Remove domain
+    container.querySelector('#addDomainBtn')?.addEventListener('click', () => {
+        let domain = container.querySelector('#newDomain').value.trim();
+        if(!domain) return;
+        domain = domain.replace(/^https?:\/\//, '').split('/')[0];
+        const black = JSON.parse(localStorage.getItem('lynzxz_blacklist') || '[]');
+        if(!black.includes(domain)) {
+            black.push(domain);
+            localStorage.setItem('lynzxz_blacklist', JSON.stringify(black));
+            location.reload();
+        }
+    });
     container.querySelectorAll('.remove-domain').forEach(btn => {
-        btn.onclick = (e) => {
-            e.stopPropagation();
+        btn.onclick = () => {
             const domain = btn.dataset.domain;
             let black = JSON.parse(localStorage.getItem('lynzxz_blacklist') || '[]');
             black = black.filter(d => d !== domain);
             localStorage.setItem('lynzxz_blacklist', JSON.stringify(black));
-            addLog('security', 'Blacklist', domain, `Domain ${domain} dihapus dari proteksi`, 'info');
             location.reload();
         };
     });
-    
-    // Clear logs
-    const clearLogsBtn = container.querySelector('#clearLogsBtn');
-    if(clearLogsBtn) {
-        clearLogsBtn.onclick = (e) => {
-            e.stopPropagation();
-            if(confirm('Hapus semua log akses?')) {
-                localStorage.setItem('lynzxz_access_logs', JSON.stringify([]));
-                addLog('admin', 'Logs', 'System', 'Log akses dibersihkan', 'info');
-                location.reload();
-            }
-        };
-    }
+    container.querySelector('#clearLogsBtn')?.addEventListener('click', () => {
+        if(confirm('Hapus semua log akses?')) {
+            localStorage.setItem('lynzxz_access_logs', JSON.stringify([]));
+            location.reload();
+        }
+    });
 }
 
 // ==================== MENU HANDLER ====================
@@ -595,7 +521,6 @@ function updateActiveMenu(moduleName) {
         else item.classList.remove('active');
     });
 }
-// Override loadModule to update menu
 const origLoad = loadModule;
 window.loadModule = function(moduleName) {
     origLoad(moduleName);
