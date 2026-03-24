@@ -2,9 +2,8 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Lynzxz Hub | Login</title>
-    <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -16,28 +15,31 @@
             justify-content: center;
             align-items: center;
             position: relative;
+            overflow: hidden;
         }
-        .particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; opacity: 0.4; }
+        .particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; opacity: 0.3; }
         .login-container {
             position: relative;
             z-index: 2;
-            background: rgba(10, 20, 30, 0.85);
-            backdrop-filter: blur(12px);
+            background: rgba(10, 20, 30, 0.9);
+            backdrop-filter: blur(15px);
             border-radius: 24px;
             padding: 40px;
             width: 90%;
             max-width: 450px;
             border: 1px solid #0ff;
             box-shadow: 0 0 40px rgba(0,255,255,0.2);
+            animation: fadeInUp 0.5s ease;
         }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         .logo { text-align: center; margin-bottom: 30px; }
-        .logo h1 { font-size: 28px; background: linear-gradient(135deg, #0ff, #f0f); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .logo h1 { font-size: 32px; background: linear-gradient(135deg, #0ff, #f0f); -webkit-background-clip: text; background-clip: text; color: transparent; letter-spacing: 2px; }
+        .logo p { color: #88aaff; font-size: 12px; margin-top: 5px; }
         .tabs { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 1px solid #336699; }
-        .tab-btn { flex: 1; background: none; border: none; padding: 10px; color: #88aaff; cursor: pointer; font-size: 16px; transition: 0.3s; }
+        .tab-btn { flex: 1; background: none; border: none; padding: 12px; color: #88aaff; cursor: pointer; font-size: 14px; font-weight: bold; transition: 0.3s; }
         .tab-btn.active { color: #0ff; border-bottom: 2px solid #0ff; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .tab-content { display: none; animation: fadeIn 0.3s; }
+        .tab-content.active { display: block; }
         .input-group { margin-bottom: 20px; }
         .input-group label { display: block; color: #ccddff; margin-bottom: 8px; font-size: 14px; }
         .input-group input { width: 100%; padding: 12px 16px; background: rgba(0,0,0,0.6); border: 1px solid #336699; border-radius: 12px; color: #0ff; font-size: 14px; }
@@ -52,15 +54,12 @@
 </head>
 <body>
     <canvas id="particleCanvas" class="particles"></canvas>
-    
     <div class="login-container">
         <div class="logo">
             <h1>LYNXZX HUB</h1>
             <p>Advanced Security Suite</p>
         </div>
-        
         <div class="device-info" id="deviceInfo">⟳ Memuat informasi perangkat...</div>
-        
         <div class="tabs">
             <button class="tab-btn active" data-tab="login">LOGIN</button>
             <button class="tab-btn" data-tab="guest">GUEST</button>
@@ -87,7 +86,7 @@
             <button id="guestBtn">MASUK SEBAGAI GUEST →</button>
         </div>
         
-        <!-- REGISTER TAB -->
+        <!-- REGISTER TAB (DENGAN KEY) -->
         <div id="registerTab" class="tab-content">
             <div class="input-group">
                 <label>👤 USERNAME</label>
@@ -101,32 +100,34 @@
                 <label>🔑 CONFIRM PASSWORD</label>
                 <input type="password" id="regConfirm" placeholder="Confirm Password">
             </div>
+            <div class="input-group">
+                <label>🔑 REGISTRATION KEY (dapatkan dari owner)</label>
+                <input type="text" id="regKey" placeholder="XXXX-XXXX">
+            </div>
             <button id="registerBtn">REGISTER →</button>
             <div id="regError" class="error-msg"></div>
             <div id="regSuccess" class="info-msg" style="display:none;"></div>
         </div>
         
         <div class="footer">
-            © 2026 @LynzxzCreator | Protected by Multi-Level Security
+            © 2026 @LynzxzCreator | Protected by Key-Based Registration
         </div>
     </div>
 
     <script>
-        // ==================== INITIALIZE DATABASE ====================
+        // ==================== INIT DATABASE ====================
         function initDatabase() {
             if(!localStorage.getItem('lynzxz_users')) {
-                const defaultUsers = {
-                    'admin': { password: 'admin123', role: 'developer', createdAt: new Date().toISOString() },
+                localStorage.setItem('lynzxz_users', JSON.stringify({
                     'developer': { password: '050411', role: 'developer', createdAt: new Date().toISOString() }
-                };
-                localStorage.setItem('lynzxz_users', JSON.stringify(defaultUsers));
+                }));
             }
-            if(!localStorage.getItem('lynzxz_blacklist')) {
-                localStorage.setItem('lynzxz_blacklist', JSON.stringify([]));
+            if(!localStorage.getItem('lynzxz_keys')) {
+                // Default key untuk demo (owner bisa generate baru)
+                localStorage.setItem('lynzxz_keys', JSON.stringify([]));
             }
-            if(!localStorage.getItem('lynzxz_access_logs')) {
-                localStorage.setItem('lynzxz_access_logs', JSON.stringify([]));
-            }
+            if(!localStorage.getItem('lynzxz_blacklist')) localStorage.setItem('lynzxz_blacklist', JSON.stringify([]));
+            if(!localStorage.getItem('lynzxz_access_logs')) localStorage.setItem('lynzxz_access_logs', JSON.stringify([]));
         }
         initDatabase();
         
@@ -162,32 +163,8 @@
             });
         });
         
-        // ==================== LOGIN FUNCTION ====================
-        function login(username, password, role = 'user') {
-            const users = JSON.parse(localStorage.getItem('lynzxz_users'));
-            if(role === 'guest') {
-                sessionStorage.setItem('lynzxz_session', JSON.stringify({ username: 'guest', role: 'guest' }));
-                window.location.href = 'dashboard.html';
-                return;
-            }
-            
-            if(users[username] && users[username].password === password) {
-                const userRole = users[username].role;
-                sessionStorage.setItem('lynzxz_session', JSON.stringify({ username, role: userRole }));
-                
-                // Log access
-                const logs = JSON.parse(localStorage.getItem('lynzxz_access_logs'));
-                logs.unshift({ user: username, action: 'login', timestamp: new Date().toISOString(), ip: 'recorded' });
-                localStorage.setItem('lynzxz_access_logs', JSON.stringify(logs.slice(0, 100)));
-                
-                window.location.href = 'dashboard.html';
-            } else {
-                throw new Error('Username atau password salah');
-            }
-        }
-        
-        // ==================== REGISTER FUNCTION ====================
-        function register(username, password, confirm) {
+        // ==================== REGISTER DENGAN KEY ====================
+        function register(username, password, confirm, key) {
             if(username.length < 3) throw new Error('Username minimal 3 karakter');
             if(password.length < 4) throw new Error('Password minimal 4 karakter');
             if(password !== confirm) throw new Error('Password tidak cocok');
@@ -195,9 +172,41 @@
             const users = JSON.parse(localStorage.getItem('lynzxz_users'));
             if(users[username]) throw new Error('Username sudah terdaftar');
             
+            // Cek key
+            let keys = JSON.parse(localStorage.getItem('lynzxz_keys') || '[]');
+            const keyEntry = keys.find(k => k.key === key && !k.usedBy);
+            if(!keyEntry) throw new Error('Key tidak valid atau sudah digunakan');
+            
+            // Tandai key sudah digunakan
+            keyEntry.usedBy = username;
+            keyEntry.usedAt = new Date().toISOString();
+            localStorage.setItem('lynzxz_keys', JSON.stringify(keys));
+            
+            // Buat user premium
             users[username] = { password, role: 'premium', createdAt: new Date().toISOString() };
             localStorage.setItem('lynzxz_users', JSON.stringify(users));
             return true;
+        }
+        
+        // ==================== LOGIN ====================
+        function login(username, password, role = 'user') {
+            const users = JSON.parse(localStorage.getItem('lynzxz_users'));
+            if(role === 'guest') {
+                sessionStorage.setItem('lynzxz_session', JSON.stringify({ username: 'guest', role: 'guest' }));
+                window.location.href = 'dashboard.html';
+                return;
+            }
+            if(users[username] && users[username].password === password) {
+                const userRole = users[username].role;
+                sessionStorage.setItem('lynzxz_session', JSON.stringify({ username, role: userRole }));
+                const logs = JSON.parse(localStorage.getItem('lynzxz_access_logs') || '[]');
+                logs.unshift({ user: username, action: 'login', target: '', timestamp: new Date().toISOString() });
+                if(logs.length > 100) logs.pop();
+                localStorage.setItem('lynzxz_access_logs', JSON.stringify(logs));
+                window.location.href = 'dashboard.html';
+            } else {
+                throw new Error('Username atau password salah');
+            }
         }
         
         // ==================== EVENT LISTENERS ====================
@@ -221,16 +230,18 @@
             const username = document.getElementById('regUsername').value;
             const password = document.getElementById('regPassword').value;
             const confirm = document.getElementById('regConfirm').value;
+            const key = document.getElementById('regKey').value;
             const errorDiv = document.getElementById('regError');
             const successDiv = document.getElementById('regSuccess');
             try {
-                register(username, password, confirm);
+                register(username, password, confirm, key);
                 errorDiv.style.display = 'none';
                 successDiv.textContent = '✅ Registrasi berhasil! Silakan login.';
                 successDiv.style.display = 'block';
                 document.getElementById('regUsername').value = '';
                 document.getElementById('regPassword').value = '';
                 document.getElementById('regConfirm').value = '';
+                document.getElementById('regKey').value = '';
                 setTimeout(() => {
                     document.querySelector('.tab-btn[data-tab="login"]').click();
                 }, 1500);
