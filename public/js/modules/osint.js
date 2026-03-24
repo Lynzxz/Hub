@@ -92,4 +92,63 @@ function renderOSINT(container) {
         `;
         document.getElementById('trackPhoneBtn')?.addEventListener('click', () => {
             let phone = document.getElementById('phoneInput')?.value.trim();
-            if(!phone) return addToTerminal('Masukkan nomor!', '
+            if(!phone) return addToTerminal('Masukkan nomor!', 'error');
+            addToTerminal(`Mencari info nomor: ${phone}`, 'command');
+            const prefixes = {
+                '0811':'Telkomsel','0812':'Telkomsel','0813':'Telkomsel','0821':'Telkomsel','0822':'Telkomsel','0823':'Telkomsel',
+                '0851':'Telkomsel','0852':'Telkomsel','0853':'Telkomsel','0854':'Telkomsel','0855':'Telkomsel','0856':'Telkomsel','0857':'Telkomsel','0858':'Telkomsel','0859':'Telkomsel',
+                '0814':'Indosat','0815':'Indosat','0816':'Indosat','0855':'Indosat','0856':'Indosat','0857':'Indosat','0858':'Indosat',
+                '0817':'XL','0818':'XL','0819':'XL','0877':'XL','0878':'XL','0879':'XL',
+                '0831':'Axis','0832':'Axis','0833':'Axis','0838':'Axis',
+                '0895':'Three','0896':'Three','0897':'Three','0898':'Three','0899':'Three'
+            };
+            let provider = prefixes[phone.substring(0,4)] || 'Tidak diketahui';
+            addToTerminal('=========================================', 'output');
+            addToTerminal(`📱 Nomor: ${phone}`, 'output');
+            addToTerminal(`📡 Provider: ${provider}`, 'output');
+            addToTerminal(`🔗 Cek lanjut: https://www.getcontact.com/ | https://www.truecaller.com/`, 'output');
+            addToTerminal('=========================================', 'output');
+        });
+    }
+    
+    // USERNAME TRACKER
+    function showUsernameTracker() {
+        inputArea.innerHTML = `
+            <label>👤 Username</label>
+            <div style="display:flex; gap:10px;">
+                <input type="text" id="userInput" placeholder="username" style="flex:1; padding:10px; background:#000; border:1px solid #0ff; color:#0f0;">
+                <button id="trackUserBtn" style="background:#0ff; color:#000; padding:10px 20px;">CEK</button>
+            </div>
+        `;
+        document.getElementById('trackUserBtn')?.addEventListener('click', async () => {
+            const username = document.getElementById('userInput')?.value.trim();
+            if(!username) return addToTerminal('Masukkan username!', 'error');
+            addToTerminal(`Mencari username: ${username}`, 'command');
+            try {
+                const res = await fetch(`https://whatsmyname.app/api/v1/username?username=${username}`);
+                const data = await res.json();
+                addToTerminal('=========================================', 'output');
+                addToTerminal(`👤 Username: ${username}`, 'success');
+                if(data.sites) {
+                    const found = data.sites.filter(s => s.exists);
+                    if(found.length) {
+                        addToTerminal(`✅ Ditemukan di ${found.length} platform:`, 'success');
+                        found.slice(0,10).forEach(s => addToTerminal(`   • ${s.name}: ${s.uri_check}`, 'output'));
+                    } else addToTerminal(`⚠️ Tidak ditemukan di platform yang discan`, 'output');
+                } else addToTerminal(`🔗 Cek manual: https://whatsmyname.app/?q=${username}`, 'output');
+                addToTerminal('=========================================', 'output');
+            } catch(e) {
+                addToTerminal(`🔗 Cek manual: https://whatsmyname.app/?q=${username}`, 'output');
+            }
+        });
+    }
+    
+    // EVENT LISTENER
+    document.getElementById('menuIPTracker')?.addEventListener('click', () => { clearTerminal(); showIPTracker(); addToTerminal('Mode: IP Tracker', 'success'); });
+    document.getElementById('menuShowMyIP')?.addEventListener('click', () => { clearTerminal(); showMyIP(); addToTerminal('Mode: Show My IP', 'success'); });
+    document.getElementById('menuPhoneTracker')?.addEventListener('click', () => { clearTerminal(); showPhoneTracker(); addToTerminal('Mode: Phone Tracker', 'success'); });
+    document.getElementById('menuUsernameTracker')?.addEventListener('click', () => { clearTerminal(); showUsernameTracker(); addToTerminal('Mode: Username Tracker', 'success'); });
+    
+    showIPTracker();
+    addToTerminal('GhostTrack siap! Klik menu di atas.');
+}
