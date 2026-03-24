@@ -2,140 +2,52 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Lynzxz Hub | Security Suite</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lynzxz Hub | Login</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Sementara kita taruh style dasar di sini dulu */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             min-height: 100vh;
-            background: linear-gradient(135deg, #0a0f1a 0%, #05080f 100%);
-            font-family: 'Segoe UI', 'Courier New', monospace;
+            background: linear-gradient(135deg, #0a0f1a 0%, #03060c 100%);
+            font-family: 'Courier New', monospace;
             display: flex;
             justify-content: center;
             align-items: center;
             position: relative;
-            overflow: hidden;
         }
-        /* Particle effect background */
-        .particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            opacity: 0.4;
-        }
+        .particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; opacity: 0.4; }
         .login-container {
             position: relative;
             z-index: 2;
-            background: rgba(10, 20, 30, 0.7);
+            background: rgba(10, 20, 30, 0.85);
             backdrop-filter: blur(12px);
             border-radius: 24px;
             padding: 40px;
             width: 90%;
             max-width: 450px;
-            border: 1px solid rgba(0, 255, 255, 0.3);
-            box-shadow: 0 0 40px rgba(0, 255, 255, 0.1);
-            animation: fadeInUp 0.6s ease-out;
+            border: 1px solid #0ff;
+            box-shadow: 0 0 40px rgba(0,255,255,0.2);
         }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .logo {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .logo h1 {
-            font-size: 28px;
-            background: linear-gradient(135deg, #00ffff, #ff00cc);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            letter-spacing: 2px;
-        }
-        .logo p {
-            color: #66ccff;
-            font-size: 12px;
-            margin-top: 8px;
-        }
-        .device-info {
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 12px;
-            padding: 12px;
-            margin-bottom: 25px;
-            font-size: 12px;
-            font-family: monospace;
-            color: #0f0;
-            border-left: 3px solid #0f0;
-            white-space: nowrap;
-            overflow-x: auto;
-        }
-        .input-group {
-            margin-bottom: 20px;
-        }
-        .input-group label {
-            display: block;
-            color: #ccddff;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-        .input-group input {
-            width: 100%;
-            padding: 14px 16px;
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid #336699;
-            border-radius: 12px;
-            color: #0ff;
-            font-size: 16px;
-            font-family: monospace;
-            transition: all 0.3s;
-        }
-        .input-group input:focus {
-            outline: none;
-            border-color: #0ff;
-            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
-        }
-        button {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(90deg, #0066cc, #00cc99);
-            border: none;
-            border-radius: 12px;
-            color: white;
-            font-weight: bold;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 10px;
-        }
-        button:hover {
-            transform: scale(1.02);
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
-        }
-        .error-msg {
-            color: #ff6666;
-            font-size: 12px;
-            margin-top: 12px;
-            text-align: center;
-            display: none;
-        }
-        .footer {
-            text-align: center;
-            margin-top: 25px;
-            font-size: 11px;
-            color: #6688aa;
-        }
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        .running-text {
-            animation: blink 2s infinite;
-        }
+        .logo { text-align: center; margin-bottom: 30px; }
+        .logo h1 { font-size: 28px; background: linear-gradient(135deg, #0ff, #f0f); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 1px solid #336699; }
+        .tab-btn { flex: 1; background: none; border: none; padding: 10px; color: #88aaff; cursor: pointer; font-size: 16px; transition: 0.3s; }
+        .tab-btn.active { color: #0ff; border-bottom: 2px solid #0ff; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; color: #ccddff; margin-bottom: 8px; font-size: 14px; }
+        .input-group input { width: 100%; padding: 12px 16px; background: rgba(0,0,0,0.6); border: 1px solid #336699; border-radius: 12px; color: #0ff; font-size: 14px; }
+        .input-group input:focus { outline: none; border-color: #0ff; box-shadow: 0 0 10px rgba(0,255,255,0.3); }
+        button { width: 100%; padding: 12px; background: linear-gradient(90deg, #0066cc, #00cc99); border: none; border-radius: 12px; color: white; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.3s; }
+        button:hover { transform: scale(1.02); box-shadow: 0 0 15px rgba(0,255,255,0.5); }
+        .error-msg { color: #ff6666; font-size: 12px; margin-top: 12px; text-align: center; display: none; }
+        .info-msg { color: #88ff88; font-size: 12px; margin-top: 12px; text-align: center; }
+        .device-info { background: rgba(0,0,0,0.5); border-radius: 12px; padding: 10px; margin-bottom: 20px; font-size: 11px; color: #0f0; border-left: 3px solid #0f0; white-space: nowrap; overflow-x: auto; }
+        .footer { text-align: center; margin-top: 20px; font-size: 11px; color: #6688aa; }
     </style>
 </head>
 <body>
@@ -147,173 +59,202 @@
             <p>Advanced Security Suite</p>
         </div>
         
-        <div class="device-info" id="deviceInfo">
-            <span class="running-text">⟳ Memuat informasi perangkat...</span>
+        <div class="device-info" id="deviceInfo">⟳ Memuat informasi perangkat...</div>
+        
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="login">LOGIN</button>
+            <button class="tab-btn" data-tab="guest">GUEST</button>
+            <button class="tab-btn" data-tab="register">REGISTER</button>
         </div>
         
-        <div class="input-group">
-            <label>🔐 MASTER KEY</label>
-            <input type="password" id="passwordInput" placeholder="••••••" maxlength="20">
+        <!-- LOGIN TAB -->
+        <div id="loginTab" class="tab-content active">
+            <div class="input-group">
+                <label>👤 USERNAME</label>
+                <input type="text" id="loginUsername" placeholder="Username">
+            </div>
+            <div class="input-group">
+                <label>🔐 PASSWORD</label>
+                <input type="password" id="loginPassword" placeholder="Password">
+            </div>
+            <button id="loginBtn">LOGIN →</button>
+            <div id="loginError" class="error-msg"></div>
         </div>
         
-        <button id="loginBtn">AUTHENTICATE →</button>
+        <!-- GUEST TAB -->
+        <div id="guestTab" class="tab-content">
+            <div class="info-msg">🎭 Mode Guest: Hanya bisa melihat fitur, tidak bisa mengeksekusi.</div>
+            <button id="guestBtn">MASUK SEBAGAI GUEST →</button>
+        </div>
         
-        <div class="error-msg" id="errorMsg">
-            ⚠️ Kunci akses tidak valid. Ulangi.
+        <!-- REGISTER TAB -->
+        <div id="registerTab" class="tab-content">
+            <div class="input-group">
+                <label>👤 USERNAME</label>
+                <input type="text" id="regUsername" placeholder="Username (min 3 karakter)">
+            </div>
+            <div class="input-group">
+                <label>🔐 PASSWORD</label>
+                <input type="password" id="regPassword" placeholder="Password (min 4 karakter)">
+            </div>
+            <div class="input-group">
+                <label>🔑 CONFIRM PASSWORD</label>
+                <input type="password" id="regConfirm" placeholder="Confirm Password">
+            </div>
+            <button id="registerBtn">REGISTER →</button>
+            <div id="regError" class="error-msg"></div>
+            <div id="regSuccess" class="info-msg" style="display:none;"></div>
         </div>
         
         <div class="footer">
-            © 2025 @LynzxzCreator | Protected by Quantum Handshake
+            © 2026 @LynzxzCreator | Protected by Multi-Level Security
         </div>
     </div>
 
     <script>
-        // === PARTICLE BACKGROUND ===
+        // ==================== INITIALIZE DATABASE ====================
+        function initDatabase() {
+            if(!localStorage.getItem('lynzxz_users')) {
+                const defaultUsers = {
+                    'admin': { password: 'admin123', role: 'developer', createdAt: new Date().toISOString() },
+                    'developer': { password: '050411', role: 'developer', createdAt: new Date().toISOString() }
+                };
+                localStorage.setItem('lynzxz_users', JSON.stringify(defaultUsers));
+            }
+            if(!localStorage.getItem('lynzxz_blacklist')) {
+                localStorage.setItem('lynzxz_blacklist', JSON.stringify([]));
+            }
+            if(!localStorage.getItem('lynzxz_access_logs')) {
+                localStorage.setItem('lynzxz_access_logs', JSON.stringify([]));
+            }
+        }
+        initDatabase();
+        
+        // ==================== DEVICE INFO ====================
+        async function getDeviceInfo() {
+            const div = document.getElementById('deviceInfo');
+            try {
+                const res = await fetch('https://api.ipify.org?format=json');
+                const ipData = await res.json();
+                const ua = navigator.userAgent;
+                let os = 'Unknown';
+                if(/Windows/.test(ua)) os = 'Windows';
+                else if(/Android/.test(ua)) os = 'Android';
+                else if(/iPhone|iPad/.test(ua)) os = 'iOS';
+                else if(/Mac/.test(ua)) os = 'macOS';
+                div.innerHTML = `<span>🌐 IP: ${ipData.ip} | 💻 ${os} | 🕒 ${new Date().toLocaleString()}</span>`;
+            } catch(e) {
+                div.innerHTML = `<span>🌐 IP: Local | 💻 ${navigator.platform} | 🕒 ${new Date().toLocaleString()}</span>`;
+            }
+        }
+        getDeviceInfo();
+        
+        // ==================== TAB SWITCHING ====================
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab + 'Tab').classList.add('active');
+                document.getElementById('loginError').style.display = 'none';
+                document.getElementById('regError').style.display = 'none';
+                document.getElementById('regSuccess').style.display = 'none';
+            });
+        });
+        
+        // ==================== LOGIN FUNCTION ====================
+        function login(username, password, role = 'user') {
+            const users = JSON.parse(localStorage.getItem('lynzxz_users'));
+            if(role === 'guest') {
+                sessionStorage.setItem('lynzxz_session', JSON.stringify({ username: 'guest', role: 'guest' }));
+                window.location.href = 'dashboard.html';
+                return;
+            }
+            
+            if(users[username] && users[username].password === password) {
+                const userRole = users[username].role;
+                sessionStorage.setItem('lynzxz_session', JSON.stringify({ username, role: userRole }));
+                
+                // Log access
+                const logs = JSON.parse(localStorage.getItem('lynzxz_access_logs'));
+                logs.unshift({ user: username, action: 'login', timestamp: new Date().toISOString(), ip: 'recorded' });
+                localStorage.setItem('lynzxz_access_logs', JSON.stringify(logs.slice(0, 100)));
+                
+                window.location.href = 'dashboard.html';
+            } else {
+                throw new Error('Username atau password salah');
+            }
+        }
+        
+        // ==================== REGISTER FUNCTION ====================
+        function register(username, password, confirm) {
+            if(username.length < 3) throw new Error('Username minimal 3 karakter');
+            if(password.length < 4) throw new Error('Password minimal 4 karakter');
+            if(password !== confirm) throw new Error('Password tidak cocok');
+            
+            const users = JSON.parse(localStorage.getItem('lynzxz_users'));
+            if(users[username]) throw new Error('Username sudah terdaftar');
+            
+            users[username] = { password, role: 'premium', createdAt: new Date().toISOString() };
+            localStorage.setItem('lynzxz_users', JSON.stringify(users));
+            return true;
+        }
+        
+        // ==================== EVENT LISTENERS ====================
+        document.getElementById('loginBtn').addEventListener('click', () => {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            const errorDiv = document.getElementById('loginError');
+            try {
+                login(username, password);
+            } catch(e) {
+                errorDiv.textContent = e.message;
+                errorDiv.style.display = 'block';
+            }
+        });
+        
+        document.getElementById('guestBtn').addEventListener('click', () => {
+            login('guest', '', 'guest');
+        });
+        
+        document.getElementById('registerBtn').addEventListener('click', () => {
+            const username = document.getElementById('regUsername').value;
+            const password = document.getElementById('regPassword').value;
+            const confirm = document.getElementById('regConfirm').value;
+            const errorDiv = document.getElementById('regError');
+            const successDiv = document.getElementById('regSuccess');
+            try {
+                register(username, password, confirm);
+                errorDiv.style.display = 'none';
+                successDiv.textContent = '✅ Registrasi berhasil! Silakan login.';
+                successDiv.style.display = 'block';
+                document.getElementById('regUsername').value = '';
+                document.getElementById('regPassword').value = '';
+                document.getElementById('regConfirm').value = '';
+                setTimeout(() => {
+                    document.querySelector('.tab-btn[data-tab="login"]').click();
+                }, 1500);
+            } catch(e) {
+                successDiv.style.display = 'none';
+                errorDiv.textContent = e.message;
+                errorDiv.style.display = 'block';
+            }
+        });
+        
+        // Enter key handler
+        document.getElementById('loginPassword').addEventListener('keypress', (e) => {
+            if(e.key === 'Enter') document.getElementById('loginBtn').click();
+        });
+        
+        // Particle background
         const canvas = document.getElementById('particleCanvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
-        
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        
-        function createParticles() {
-            const particleCount = 80;
-            for(let i = 0; i < particleCount; i++) {
-                particles.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    radius: Math.random() * 2 + 1,
-                    speedX: (Math.random() - 0.5) * 0.5,
-                    speedY: (Math.random() - 0.5) * 0.3,
-                    color: `rgba(0, ${Math.floor(150 + Math.random() * 105)}, 255, ${Math.random() * 0.5})`
-                });
-            }
-        }
-        
-        function drawParticles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => {
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                ctx.fillStyle = p.color;
-                ctx.fill();
-                p.x += p.speedX;
-                p.y += p.speedY;
-                if(p.x < 0) p.x = canvas.width;
-                if(p.x > canvas.width) p.x = 0;
-                if(p.y < 0) p.y = canvas.height;
-                if(p.y > canvas.height) p.y = 0;
-            });
-            requestAnimationFrame(drawParticles);
-        }
-        
-        window.addEventListener('resize', () => {
-            resizeCanvas();
-            particles = [];
-            createParticles();
-        });
-        
-        resizeCanvas();
-        createParticles();
-        drawParticles();
-        
-        // === DEVICE INFO & IP (RUNNING TEXT) ===
-        async function getDeviceInfo() {
-            const deviceDiv = document.getElementById('deviceInfo');
-            deviceDiv.innerHTML = '<span class="running-text">⟳ Mengambil data jaringan...</span>';
-            
-            // Ambil IP publik dan info perangkat
-            let ipData = { ip: '127.0.0.1', city: 'Local', region: 'Local' };
-            try {
-                const res = await fetch('https://ipapi.co/json/');
-                const data = await res.json();
-                ipData = {
-                    ip: data.ip || 'unknown',
-                    city: data.city || 'Unknown',
-                    region: data.region || '',
-                    country: data.country_name || ''
-                };
-            } catch(e) {
-                console.warn('IP API failed, using local');
-            }
-            
-            const userAgent = navigator.userAgent;
-            let device = 'Unknown Device';
-            let os = 'Unknown OS';
-            let browser = 'Unknown Browser';
-            
-            if (/Windows NT 10.0/.test(userAgent)) os = 'Windows 11/10';
-            else if (/Windows NT 6.1/.test(userAgent)) os = 'Windows 7';
-            else if (/Mac OS X/.test(userAgent)) os = 'macOS';
-            else if (/Android/.test(userAgent)) os = 'Android';
-            else if (/iPhone|iPad/.test(userAgent)) os = 'iOS';
-            
-            if (/Chrome/.test(userAgent) && !/Edg/.test(userAgent)) browser = 'Chrome';
-            else if (/Firefox/.test(userAgent)) browser = 'Firefox';
-            else if (/Edg/.test(userAgent)) browser = 'Edge';
-            else if (/Safari/.test(userAgent)) browser = 'Safari';
-            
-            device = `${os} / ${browser}`;
-            
-            const locationText = ipData.city && ipData.city !== 'Unknown' 
-                ? `${ipData.city}, ${ipData.country}` 
-                : 'Unknown Location';
-            
-            const infoText = `🌐 IP PUBLIK: ${ipData.ip}  |  📍 ${locationText}  |  💻 ${device}  |  🔐 SESSION: ${new Date().toLocaleTimeString()}`;
-            
-            deviceDiv.innerHTML = `<span class="running-text" style="display:inline-block; white-space:nowrap;">${infoText}</span>`;
-            
-            // Scrolling effect (marquee-like)
-            const marquee = deviceDiv.querySelector('.running-text');
-            if(marquee) {
-                let pos = 0;
-                setInterval(() => {
-                    if(marquee.offsetWidth > deviceDiv.offsetWidth) {
-                        pos--;
-                        if(pos < -marquee.offsetWidth) pos = deviceDiv.offsetWidth;
-                        marquee.style.transform = `translateX(${pos}px)`;
-                    }
-                }, 30);
-            }
-        }
-        
-        getDeviceInfo();
-        setInterval(getDeviceInfo, 30000); // update tiap 30 detik
-        
-        // === LOGIN HANDLER ===
-        const CORRECT_PASSWORD = "050411";
-        const loginBtn = document.getElementById('loginBtn');
-        const passwordInput = document.getElementById('passwordInput');
-        const errorMsg = document.getElementById('errorMsg');
-        
-        function attemptLogin() {
-            const entered = passwordInput.value;
-            if(entered === CORRECT_PASSWORD) {
-                // Simpan status login di sessionStorage
-                sessionStorage.setItem('lynzxz_auth', 'true');
-                // Redirect ke dashboard
-                window.location.href = 'dashboard.html';
-            } else {
-                errorMsg.style.display = 'block';
-                passwordInput.value = '';
-                passwordInput.style.borderColor = '#ff3366';
-                setTimeout(() => {
-                    passwordInput.style.borderColor = '#336699';
-                }, 500);
-            }
-        }
-        
-        loginBtn.addEventListener('click', attemptLogin);
-        passwordInput.addEventListener('keypress', (e) => {
-            if(e.key === 'Enter') attemptLogin();
-        });
-        
-        // Jika sudah login sebelumnya, langsung redirect
-        if(sessionStorage.getItem('lynzxz_auth') === 'true') {
-            window.location.href = 'dashboard.html';
-        }
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        function createParticles() { for(let i=0;i<80;i++) particles.push({ x:Math.random()*canvas.width, y:Math.random()*canvas.height, radius:Math.random()*2+1, speedX:(Math.random()-0.5)*0.5, speedY:(Math.random()-0.5)*0.3, color:`rgba(0,${150+Math.random()*105},255,${Math.random()*0.5})` }); }
+        function drawParticles() { ctx.clearRect(0,0,canvas.width,canvas.height); particles.forEach(p => { ctx.beginPath(); ctx.arc(p.x,p.y,p.radius,0,Math.PI*2); ctx.fillStyle = p.color; ctx.fill(); p.x+=p.speedX; p.y+=p.speedY; if(p.x<0) p.x=canvas.width; if(p.x>canvas.width) p.x=0; if(p.y<0) p.y=canvas.height; if(p.y>canvas.height) p.y=0; }); requestAnimationFrame(drawParticles); }
+        window.addEventListener('resize', () => { resizeCanvas(); particles = []; createParticles(); });
+        resizeCanvas(); createParticles(); drawParticles();
     </script>
 </body>
 </html>
