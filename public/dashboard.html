@@ -6,6 +6,7 @@
     <title>Lynzxz Hub | Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        /* (style sama seperti sebelumnya, tidak berubah) */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: linear-gradient(135deg, #0a0f1a 0%, #03060c 100%);
@@ -155,10 +156,10 @@
         <div class="menu-list" id="menuList">
             <div class="menu-item" data-module="ddos"><i class="fas fa-bolt"></i> <span>DDoS Attack</span></div>
             <div class="menu-item" data-module="deface"><i class="fas fa-paint-roller"></i> <span>Deface Generator</span></div>
-            <div class="menu-item" data-module="wp"><i class="fab fa-wordpress"></i> <span>WordPress Checker</span></div>
+            <div class="menu-item" data-module="wordpress"><i class="fab fa-wordpress"></i> <span>WordPress Checker</span></div>
             <div class="menu-item" data-module="sql"><i class="fas fa-database"></i> <span>SQL Inject Scanner</span></div>
-            <div class="menu-item" data-module="admin"><i class="fas fa-user-secret"></i> <span>Admin Finder</span></div>
-            <div class="menu-item" data-module="brute"><i class="fas fa-key"></i> <span>Brute Force</span></div>
+            <div class="menu-item" data-module="adminfinder"><i class="fas fa-user-secret"></i> <span>Admin Finder</span></div>
+            <div class="menu-item" data-module="bruteforce"><i class="fas fa-key"></i> <span>Brute Force</span></div>
             <div class="menu-item" data-module="advanced"><i class="fas fa-skull"></i> <span>Advanced Tools</span></div>
             <div class="menu-item" data-module="osint"><i class="fas fa-search-location"></i> <span>OSINT Intel</span></div>
             <div id="developerMenuItem" style="display:none;" class="menu-item" data-module="adminpanel"><i class="fas fa-crown"></i> <span>👑 Developer Panel</span></div>
@@ -253,19 +254,31 @@ function clearAllLogs() {
 function logout() { sessionStorage.removeItem('lynzxz_session'); window.location.href = 'index.html'; }
 
 // ==================== MODULE LOADER ====================
+const moduleMap = {
+    ddos: { file: 'ddos.js', func: 'renderDdos' },
+    deface: { file: 'deface.js', func: 'renderDeface' },
+    wordpress: { file: 'wordpress.js', func: 'renderWordPress' },
+    sql: { file: 'sql.js', func: 'renderSQL' },
+    adminfinder: { file: 'admin.js', func: 'renderAdmin' },
+    bruteforce: { file: 'bruteforce.js', func: 'renderBrute' },
+    advanced: { file: 'advanced.js', func: 'renderAdvanced' },
+    osint: { file: 'osint.js', func: 'renderOSINT' },
+    adminpanel: { file: null, func: null } // built-in
+};
+
 let currentModule = 'ddos';
-const moduleCache = {};
+const loadedScripts = {};
 
 function loadModule(moduleName) {
     currentModule = moduleName;
     const container = document.getElementById('moduleContainer');
     const titleMap = {
-        ddos:'⚡ DDoS Attack Suite',
-        deface:'🎨 Deface Generator Pro',
-        wp:'🔍 WordPress Vulnerability Scanner',
+        ddos:'⚡ DDoS Attack',
+        deface:'🎨 Deface Generator',
+        wordpress:'🔍 WordPress Scanner',
         sql:'💉 SQL Injection Scanner',
-        admin:'🔎 Admin Panel Finder',
-        brute:'🔑 Brute Force Attack',
+        adminfinder:'🔎 Admin Panel Finder',
+        bruteforce:'🔑 Brute Force Attack',
         advanced:'💀 Advanced Arsenal',
         osint:'🕵️ OSINT Intelligence',
         adminpanel:'👑 Developer Panel'
@@ -277,31 +290,42 @@ function loadModule(moduleName) {
         return;
     }
     
-    // Cek cache
-    if(moduleCache[moduleName]) {
-        moduleCache[moduleName](container);
+    const mod = moduleMap[moduleName];
+    if(!mod) {
+        container.innerHTML = `<div class="module-card">❌ Modul ${moduleName} tidak dikenal.</div>`;
         return;
     }
     
-    // Load script
+    // Check if function already exists
+    if(window[mod.func]) {
+        window[mod.func](container);
+        return;
+    }
+    
+    // Load script if not already loaded
+    if(loadedScripts[mod.file]) {
+        // script loaded but function not defined? maybe error
+        container.innerHTML = `<div class="module-card">❌ Modul ${moduleName} gagal dimuat. Fungsi ${mod.func} tidak ditemukan.</div>`;
+        return;
+    }
+    
     const script = document.createElement('script');
-    script.src = `js/modules/${moduleName}.js`;
+    script.src = `js/modules/${mod.file}`;
     script.onload = () => {
-        const fn = window[`render${moduleName.charAt(0).toUpperCase() + moduleName.slice(1)}`];
-        if(fn) {
-            moduleCache[moduleName] = fn;
-            fn(container);
+        if(window[mod.func]) {
+            window[mod.func](container);
         } else {
-            container.innerHTML = `<div class="module-card">❌ Modul ${moduleName} tidak ditemukan. Pastikan file js/modules/${moduleName}.js ada.</div>`;
+            container.innerHTML = `<div class="module-card">❌ Modul ${moduleName}: fungsi ${mod.func} tidak ditemukan. Periksa file ${mod.file}.</div>`;
         }
     };
     script.onerror = () => {
-        container.innerHTML = `<div class="module-card">❌ Gagal memuat modul ${moduleName}. File js/modules/${moduleName}.js tidak ditemukan.</div>`;
+        container.innerHTML = `<div class="module-card">❌ Gagal memuat modul ${moduleName}. File js/modules/${mod.file} tidak ditemukan.</div>`;
     };
     document.head.appendChild(script);
+    loadedScripts[mod.file] = true;
 }
 
-// ==================== DEVELOPER PANEL ====================
+// ==================== DEVELOPER PANEL (BUILT-IN) ====================
 function renderDeveloperPanel(container) {
     if(!isDeveloper()) {
         container.innerHTML = `<div class="module-card"><h3>⛔ ACCESS DENIED</h3><p>Hanya Developer yang dapat mengakses panel ini.</p></div>`;
@@ -408,22 +432,15 @@ function renderDeveloperPanel(container) {
         </div>
     `;
     
-    // Tab switching (tidak pakai onclick langsung, agar tidak bentrok)
-    const tabs = container.querySelectorAll('.dev-tab');
-    const contents = {
-        users: container.querySelector('#devUsers'),
-        keys: container.querySelector('#devKeys'),
-        protect: container.querySelector('#devProtect'),
-        logs: container.querySelector('#devLogs')
-    };
-    tabs.forEach(tab => {
+    // Attach events using event delegation to avoid reload issues
+    container.querySelectorAll('.dev-tab').forEach(tab => {
         tab.onclick = (e) => {
             e.stopPropagation();
-            tabs.forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-            Object.values(contents).forEach(c => c.style.display = 'none');
             const tabId = tab.dataset.tab;
-            contents[tabId].style.display = 'block';
+            container.querySelectorAll('.dev-tab').forEach(t => t.classList.remove('active'));
+            container.querySelectorAll('.dev-tab-content').forEach(c => c.style.display = 'none');
+            tab.classList.add('active');
+            container.querySelector(`#dev${tabId.charAt(0).toUpperCase() + tabId.slice(1)}`).style.display = 'block';
         };
     });
     
@@ -563,7 +580,6 @@ function attachMenuListeners() {
         item.addEventListener('click', menuClickHandler);
     });
 }
-
 function menuClickHandler(e) {
     e.stopPropagation();
     const mod = this.dataset.module;
@@ -573,18 +589,16 @@ function menuClickHandler(e) {
     }
     loadModule(mod);
 }
-
 function updateActiveMenu(moduleName) {
     document.querySelectorAll('.menu-item').forEach(item => {
         if(item.dataset.module === moduleName) item.classList.add('active');
         else item.classList.remove('active');
     });
 }
-
-// Override loadModule untuk update active menu
-const originalLoadModule = loadModule;
+// Override loadModule to update menu
+const origLoad = loadModule;
 window.loadModule = function(moduleName) {
-    originalLoadModule(moduleName);
+    origLoad(moduleName);
     updateActiveMenu(moduleName);
 };
 loadModule = window.loadModule;
